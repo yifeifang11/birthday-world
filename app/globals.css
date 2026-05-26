@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eefaf8;
+  --foreground: #0f172a;
+  --panel: rgba(255, 255, 255, 0.68);
+  --panel-strong: rgba(255, 255, 255, 0.9);
+  --line: rgba(15, 23, 42, 0.1);
+  --shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
 }
 
 @theme inline {
@@ -12,15 +16,69 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.55) 38%,
+      rgba(220, 245, 241, 0.9) 64%,
+      rgba(210, 234, 255, 0.95)
+    ),
+    var(--background);
 }
 
 body {
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    rgba(15, 23, 42, 0.03) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  opacity: 0.35;
+}
+
+::selection {
+  background: rgba(15, 23, 42, 0.14);
+}
+
+a {
+  text-decoration: none;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.panel-strong {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.world-shell {
+  background: linear-gradient(
+    180deg,
+    rgba(227, 247, 255, 0.35),
+    rgba(226, 252, 237, 0.2)
+  );
 }
