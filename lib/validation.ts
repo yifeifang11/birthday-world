@@ -5,6 +5,8 @@ const avatarConfigSchema = z.object({
   skinColor: z.string().min(1),
   hairColor: z.string().min(1),
   shirtColor: z.string().min(1),
+  eyeColor: z.string().min(1),
+  mouthColor: z.string().min(1),
   headShape: z.enum(avatarShapeOptions.headShape),
   torsoShape: z.enum(avatarShapeOptions.torsoShape),
   hairStyle: z.enum(avatarShapeOptions.hairStyle),

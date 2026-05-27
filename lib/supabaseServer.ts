@@ -1,11 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 import { createNameSlug, getScatterPosition } from "./positions";
 import { memorySites } from "./memorySites";
-import type { MessageRow, MessageSubmission, PublicMessage } from "./types";
+import { defaultAvatarConfig } from "./avatarOptions";
+import type {
+  MessageRow,
+  MessageSubmission,
+  PublicMessage,
+  AvatarConfig,
+} from "./types";
 
 type StoreState = {
   messages: MessageRow[];
   nextIndex: number;
+  avatarSettings?: AvatarConfig | null;
 };
 
 const seedMessages: MessageRow[] = [
@@ -18,6 +25,8 @@ const seedMessages: MessageRow[] = [
       skinColor: "#f5d0b5",
       hairColor: "#2b1b12",
       shirtColor: "#0ea5e9",
+      eyeColor: "#1f2937",
+      mouthColor: "#8b3f3f",
       headShape: "round",
       torsoShape: "box",
       hairStyle: "cap",
@@ -40,7 +49,9 @@ const seedMessages: MessageRow[] = [
       skinColor: "#d9a066",
       hairColor: "#6b4b3a",
       shirtColor: "#22c55e",
-      headShape: "wide",
+      eyeColor: "#1f2937",
+      mouthColor: "#b91c1c",
+      headShape: "square",
       torsoShape: "oval",
       hairStyle: "sidePart",
       eyes: "oval",
@@ -86,13 +97,31 @@ function getSupabaseClient() {
   });
 }
 
+function normalizeAvatarConfig(
+  settings: Partial<AvatarConfig> | null | undefined,
+) {
+  const legacyAccessory = (
+    settings as { accessory?: string } | null | undefined
+  )?.accessory;
+  const accessory =
+    legacyAccessory === "hat" || legacyAccessory === "baseballCap"
+      ? defaultAvatarConfig.accessory
+      : settings?.accessory;
+
+  return {
+    ...defaultAvatarConfig,
+    ...(settings ?? {}),
+    accessory: accessory ?? defaultAvatarConfig.accessory,
+  } as AvatarConfig;
+}
+
 function toPublicMessage(row: MessageRow): PublicMessage {
   return {
     id: row.id,
     displayName: row.display_name,
     nameSlug: row.name_slug,
     message: row.message,
-    avatar: row.avatar,
+    avatar: normalizeAvatarConfig(row.avatar),
     position: {
       x: row.position_x ?? 0,
       y: row.position_y ?? 0,
@@ -152,6 +181,7 @@ export async function createMessage(input: MessageSubmission) {
   const supabase = getSupabaseClient();
   const approved = isAutoApproveEnabled();
   const nameSlug = createNameSlug(input.displayName);
+  const avatar = normalizeAvatarConfig(input.avatar);
 
   if (!supabase) {
     const store = getMemoryStore();
@@ -161,7 +191,7 @@ export async function createMessage(input: MessageSubmission) {
       display_name: input.displayName,
       name_slug: nameSlug,
       message: input.message,
-      avatar: input.avatar,
+      avatar,
       position_x: position.x,
       position_y: position.y,
       position_z: position.z,
@@ -189,7 +219,7 @@ export async function createMessage(input: MessageSubmission) {
     display_name: input.displayName,
     name_slug: nameSlug,
     message: input.message,
-    avatar: input.avatar,
+    avatar,
     position_x: position.x,
     position_y: position.y,
     position_z: position.z,
@@ -258,4 +288,59 @@ export async function deleteMessage(id: string) {
 
 export function getStaticMemorySites() {
   return memorySites.filter((site) => site.enabled);
+}
+
+export async function getAvatarSettings(): Promise<AvatarConfig | null> {
+  const supabase = getSupabaseClient();
+
+  if (!supabase) {
+    const store = getMemoryStore();
+    return store.avatarSettings
+      ? normalizeAvatarConfig(store.avatarSettings)
+      : null;
+  }
+
+  const { data, error } = await supabase
+    .from("avatar_settings")
+    .select("settings")
+    .limit(1)
+    .single();
+
+  if (error) {
+    // If table doesn't exist or other error, return null to let caller seed defaults
+    return null;
+  }
+
+  return data?.settings
+    ? normalizeAvatarConfig(data.settings as Partial<AvatarConfig>)
+    : null;
+}
+
+export async function saveAvatarSettings(settings: AvatarConfig) {
+  const supabase = getSupabaseClient();
+  const normalized = normalizeAvatarConfig(settings);
+
+  if (!supabase) {
+    const store = getMemoryStore();
+    store.avatarSettings = normalized;
+    return store.avatarSettings;
+  }
+
+  // Try upsert into avatar_settings with a single-row id 'singleton'
+  const payload = { id: "singleton", settings: normalized };
+
+  const { data, error } = await supabase
+    .from("avatar_settings")
+    .upsert(payload)
+    .select("settings")
+    .single();
+
+  if (error) {
+    // swallow errors and return settings so UI can continue
+    return normalized;
+  }
+
+  return data?.settings
+    ? normalizeAvatarConfig(data.settings as Partial<AvatarConfig>)
+    : normalized;
 }

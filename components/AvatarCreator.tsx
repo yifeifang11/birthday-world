@@ -5,7 +5,9 @@ import { AvatarPreview } from "./AvatarPreview";
 import {
   avatarShapeOptions,
   defaultAvatarConfig,
+  eyeColorOptions,
   hairColorOptions,
+  mouthColorOptions,
   shirtColorOptions,
   skinToneOptions,
   toLabel,
@@ -135,7 +137,7 @@ export function AvatarCreator() {
         </div>
 
         <div className="mt-6 grid gap-5">
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-5">
             <label className="grid gap-2 text-sm font-medium text-slate-800">
               Skin
               <select
@@ -169,6 +171,22 @@ export function AvatarCreator() {
               </select>
             </label>
             <label className="grid gap-2 text-sm font-medium text-slate-800">
+              Eye color
+              <select
+                className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-400"
+                value={avatar.eyeColor}
+                onChange={(event) =>
+                  setAvatar({ ...avatar, eyeColor: event.target.value })
+                }
+              >
+                {eyeColorOptions.map((tone) => (
+                  <option key={tone} value={tone}>
+                    {tone}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2 text-sm font-medium text-slate-800">
               Shirt
               <select
                 className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-400"
@@ -178,6 +196,23 @@ export function AvatarCreator() {
                 }
               >
                 {shirtColorOptions.map((tone) => (
+                  <option key={tone} value={tone}>
+                    {tone}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="grid gap-2 text-sm font-medium text-slate-800">
+              Mouth color
+              <select
+                className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-400"
+                value={avatar.mouthColor}
+                onChange={(event) =>
+                  setAvatar({ ...avatar, mouthColor: event.target.value })
+                }
+              >
+                {mouthColorOptions.map((tone) => (
                   <option key={tone} value={tone}>
                     {tone}
                   </option>

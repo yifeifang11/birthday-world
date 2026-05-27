@@ -2,12 +2,47 @@ export type AvatarConfig = {
   skinColor: string;
   hairColor: string;
   shirtColor: string;
-  headShape: "round" | "tall" | "wide";
-  torsoShape: "box" | "oval" | "cone";
-  hairStyle: "bald" | "cap" | "spiky" | "sidePart";
-  eyes: "dots" | "oval" | "sleepy";
-  mouth: "smile" | "flat" | "open";
-  accessory: "none" | "glasses" | "hat" | "partyHat";
+  eyeColor: string;
+  headShape: "round" | "tall" | "square";
+  torsoShape: "box" | "oval" | "cone" | "cylinder" | "pyramid" | "cube";
+  hairStyle:
+    | "bald"
+    | "buzz"
+    | "cap"
+    | "curly"
+    | "doubleBun"
+    | "hairDown"
+    | "ponyTail"
+    | "pigtails"
+    | "spiky"
+    | "sidePart";
+  eyes:
+    | "dots"
+    | "oval"
+    | "sleepy"
+    | "wink"
+    | "sparkle"
+    | "arc"
+    | "lines"
+    | "tenEyes";
+  mouth: "smile" | "flat" | "open" | "grin" | "smirk";
+  accessory:
+    | "none"
+    | "glasses"
+    | "partyHat"
+    | "monocle"
+    | "toteBag"
+    | "inflatablePoolRing"
+    | "banana"
+    | "pizzaHat"
+    | "moustache"
+    | "trafficConeHat"
+    | "cape"
+    | "wizardHat"
+    | "baguette"
+    | "haloHat"
+    | "cloudHat";
+  mouthColor: string;
 };
 
 export type MessageRow = {
