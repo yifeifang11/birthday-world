@@ -14,6 +14,7 @@ type FloatingAvatarProps = {
   showName?: boolean;
   highlight?: boolean;
   floatOffset?: number;
+  bobbing?: boolean;
   onClick?: () => void;
 };
 
@@ -42,6 +43,7 @@ export const FloatingAvatar = forwardRef<Group, FloatingAvatarProps>(
       showName = true,
       highlight = false,
       floatOffset = 0,
+      bobbing = true,
       onClick,
     },
     ref,
@@ -57,8 +59,11 @@ export const FloatingAvatar = forwardRef<Group, FloatingAvatarProps>(
         return;
       }
 
-      const bob = Math.sin(clock.elapsedTime * 2 + floatOffset) * 0.08;
-      groupRef.current.position.y = position[1] + bob;
+      const lift = Number(groupRef.current.userData.verticalOffset ?? 0);
+      const bob = bobbing
+        ? Math.sin(clock.elapsedTime * 2 + floatOffset) * 0.08
+        : 0;
+      groupRef.current.position.y = position[1] + lift + bob;
     });
 
     const eyePositions = [-0.16, 0.16] as const;

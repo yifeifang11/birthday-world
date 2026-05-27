@@ -1,6 +1,6 @@
 "use client";
 
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { findNearbyInteractable } from "@/lib/interactables";
@@ -8,6 +8,7 @@ import type { WorldInteractable } from "@/lib/types";
 
 type PlayerControllerProps = {
   playerRef: React.RefObject<THREE.Group | null>;
+  controlsRef: React.RefObject<any>;
   interactables: WorldInteractable[];
   onNearbyChange: (value: WorldInteractable | null) => void;
   onInteract: (value: WorldInteractable) => void;
@@ -18,18 +19,32 @@ type KeyState = Record<string, boolean>;
 
 export function PlayerController({
   playerRef,
+  controlsRef,
   interactables,
   onNearbyChange,
   onInteract,
   onClose,
 }: PlayerControllerProps) {
-  const { camera } = useThree();
   const keys = useRef<KeyState>({});
   const activeInteractable = useRef<WorldInteractable | null>(null);
+  const verticalVelocity = useRef(0);
+  const grounded = useRef(true);
+  const groundY = 0.05;
+  const jumpVelocity = 6.5;
+  const gravity = 16;
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === " ") {
+        event.preventDefault();
+      }
+
       keys.current[event.key.toLowerCase()] = true;
+
+      if (event.key === " " && grounded.current) {
+        verticalVelocity.current = jumpVelocity;
+        grounded.current = false;
+      }
 
       if (event.key.toLowerCase() === "e" && activeInteractable.current) {
         onInteract(activeInteractable.current);
@@ -75,17 +90,28 @@ export function PlayerController({
       player.rotation.y = Math.atan2(direction.x, direction.z);
     }
 
+    verticalVelocity.current -= gravity * delta;
+    player.position.y += verticalVelocity.current * delta;
+
+    if (player.position.y <= groundY) {
+      player.position.y = groundY;
+      verticalVelocity.current = 0;
+      grounded.current = true;
+    }
+
+    player.userData.verticalOffset = player.position.y - groundY;
+
     const targetPosition = new THREE.Vector3(
       player.position.x,
-      player.position.y + 3.1,
-      player.position.z + 5.2,
-    );
-    camera.position.lerp(targetPosition, 0.08);
-    camera.lookAt(
-      player.position.x,
-      player.position.y + 1.15,
+      player.position.y + 1.1,
       player.position.z,
     );
+
+    const controls = controlsRef.current;
+    if (controls) {
+      controls.target.copy(targetPosition);
+      controls.update();
+    }
 
     const nearby = findNearbyInteractable(player.position, interactables);
 

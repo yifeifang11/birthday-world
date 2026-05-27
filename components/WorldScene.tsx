@@ -3,6 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { OrbitControls } from "@react-three/drei";
 import { FloatingAvatar } from "./FloatingAvatar";
 import { InteractionPrompt } from "./InteractionPrompt";
 import { MemorySiteModal } from "./MemorySiteModal";
@@ -27,6 +28,7 @@ export function WorldScene() {
   const [selectedMemorySite, setSelectedMemorySite] =
     useState<MemorySite | null>(null);
   const playerRef = useRef<THREE.Group | null>(null);
+  const controlsRef = useRef<THREE.Object3D | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -129,6 +131,18 @@ export function WorldScene() {
           intensity={0.55}
           color="#ffffff"
           groundColor="#c8f0dd"
+        />
+        <OrbitControls
+          ref={controlsRef as never}
+          enablePan={false}
+          enableZoom
+          enableDamping
+          dampingFactor={0.08}
+          minDistance={4.5}
+          maxDistance={16}
+          minPolarAngle={Math.PI / 4.8}
+          maxPolarAngle={Math.PI / 2.08}
+          target={[0, 1.1, 0]}
         />
 
         <mesh
@@ -241,10 +255,12 @@ export function WorldScene() {
           scale={1.08}
           showName={false}
           highlight
+          bobbing={false}
         />
         <PlayerController
           playerRef={playerRef}
           interactables={interactables}
+          controlsRef={controlsRef}
           onNearbyChange={setNearby}
           onInteract={handleInteract}
           onClose={closePanels}
@@ -262,7 +278,7 @@ export function WorldScene() {
       <MemorySiteModal site={selectedMemorySite} onClose={closePanels} />
 
       {!loading && !error && messages.length === 0 ? (
-        <div className="absolute bottom-6 left-6 max-w-md rounded-[1.5rem] border border-white/70 bg-white/80 p-4 text-sm text-slate-700 shadow-[0_18px_50px_rgba(15,23,42,0.12)] backdrop-blur">
+        <div className="absolute bottom-6 left-6 max-w-md rounded-3xl border border-white/70 bg-white/80 p-4 text-sm text-slate-700 shadow-[0_18px_50px_rgba(15,23,42,0.12)] backdrop-blur">
           No approved messages yet. Submit one from the create page, then
           approve it in admin to see it in the world.
         </div>
