@@ -3,13 +3,15 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { findNearbyInteractable } from "@/lib/interactables";
 import type { WorldInteractable } from "@/lib/types";
 
 type PlayerControllerProps = {
   playerRef: React.RefObject<THREE.Group | null>;
-  controlsRef: React.RefObject<any>;
+  controlsRef: React.RefObject<OrbitControlsImpl | null>;
   interactables: WorldInteractable[];
+  obstacleZones?: { x: number; z: number; radius: number }[];
   onNearbyChange: (value: WorldInteractable | null) => void;
   onInteract: (value: WorldInteractable) => void;
   onClose: () => void;
@@ -21,6 +23,7 @@ export function PlayerController({
   playerRef,
   controlsRef,
   interactables,
+  obstacleZones = [],
   onNearbyChange,
   onInteract,
   onClose,
@@ -85,9 +88,42 @@ export function PlayerController({
 
     if (direction.lengthSq() > 0) {
       direction.normalize();
-      player.position.x += direction.x * speed * delta;
-      player.position.z += direction.z * speed * delta;
-      player.rotation.y = Math.atan2(direction.x, direction.z);
+      const nextX = player.position.x + direction.x * speed * delta;
+      const nextZ = player.position.z + direction.z * speed * delta;
+      const collisionPadding = 0.45;
+
+      const isBlocked = (x: number, z: number) =>
+        obstacleZones.some((zone) => {
+          const dx = x - zone.x;
+          const dz = z - zone.z;
+          const minDistance = zone.radius + collisionPadding;
+          return dx * dx + dz * dz < minDistance * minDistance;
+        });
+
+      let moved = false;
+
+      if (!isBlocked(nextX, nextZ)) {
+        player.position.x = nextX;
+        player.position.z = nextZ;
+        moved = true;
+      } else {
+        const canMoveX = !isBlocked(nextX, player.position.z);
+        const canMoveZ = !isBlocked(player.position.x, nextZ);
+
+        if (canMoveX) {
+          player.position.x = nextX;
+          moved = true;
+        }
+
+        if (canMoveZ) {
+          player.position.z = nextZ;
+          moved = true;
+        }
+      }
+
+      if (moved) {
+        player.rotation.y = Math.atan2(direction.x, direction.z);
+      }
     }
 
     verticalVelocity.current -= gravity * delta;

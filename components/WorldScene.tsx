@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { FloatingAvatar } from "./FloatingAvatar";
 import { InteractionPrompt } from "./InteractionPrompt";
 import { MemorySiteModal } from "./MemorySiteModal";
@@ -15,20 +16,52 @@ import { defaultAvatarConfig } from "@/lib/avatarOptions";
 import { memorySites } from "@/lib/memorySites";
 import type { MemorySite, PublicMessage, WorldInteractable } from "@/lib/types";
 
-const pathStart = { x: -15.5, y: 0.05, z: 0 };
-const mainAreaOffset = { x: 15.5, z: 0.4 };
+const pathStart = { x: -37, y: 0.05, z: 0 };
+const mainAreaOffset = { x: 24, z: 0.8 };
 
 const trailMarkers = [
-  { x: -13, z: 0.15 },
-  { x: -10, z: -0.15 },
-  { x: -7, z: 0.2 },
-  { x: -4, z: -0.1 },
-  { x: -1, z: 0.18 },
-  { x: 2, z: -0.12 },
-  { x: 5, z: 0.16 },
-  { x: 8, z: -0.08 },
-  { x: 11, z: 0.14 },
-  { x: 14, z: 0.02 },
+  { x: -34, z: 0.45 },
+  { x: -31, z: -0.65 },
+  { x: -28, z: 1.15 },
+  { x: -25, z: -1.35 },
+  { x: -22, z: 1.95 },
+  { x: -19, z: -2.25 },
+  { x: -16, z: 2.55 },
+  { x: -13, z: -2.45 },
+  { x: -10, z: 2.35 },
+  { x: -7, z: -1.95 },
+  { x: -4, z: 1.45 },
+  { x: -1, z: -1.05 },
+  { x: 2, z: 0.85 },
+  { x: 5, z: -0.65 },
+  { x: 8, z: 0.55 },
+  { x: 11, z: -0.45 },
+  { x: 14, z: 0.35 },
+  { x: 17, z: -0.28 },
+  { x: 20, z: 0.22 },
+  { x: 23, z: 0.08 },
+];
+
+const trailRocks = [
+  { x: -27.2, z: -0.1, radius: 1.1, height: 1.25, color: "#8f8577" },
+  { x: -23.5, z: 0.95, radius: 0.95, height: 1.05, color: "#9d9385" },
+  { x: -20.3, z: -1.35, radius: 0.9, height: 1, color: "#857b6d" },
+  { x: -14.6, z: 0.15, radius: 1.15, height: 1.35, color: "#948a7c" },
+  { x: -11.2, z: -1.25, radius: 0.85, height: 0.9, color: "#a29789" },
+  { x: -3.9, z: 0.2, radius: 1, height: 1.2, color: "#8e8476" },
+  { x: 1.2, z: -0.6, radius: 0.8, height: 0.85, color: "#a69b8d" },
+  { x: 6.7, z: 0.15, radius: 1.05, height: 1.18, color: "#928779" },
+];
+
+const trailLogs = [
+  { x: -18.4, z: 0.28, length: 3.5, rotationY: 0.6 },
+  { x: -8.8, z: 0.55, length: 3.1, rotationY: -0.5 },
+  { x: 3.6, z: -0.12, length: 3.8, rotationY: 0.42 },
+];
+
+const obstacleZones = [
+  ...trailRocks.map((rock) => ({ x: rock.x, z: rock.z, radius: rock.radius })),
+  ...trailLogs.map((log) => ({ x: log.x, z: log.z, radius: 1.15 })),
 ];
 
 function offsetPosition(
@@ -55,7 +88,7 @@ export function WorldScene() {
   const [selectedMemorySite, setSelectedMemorySite] =
     useState<MemorySite | null>(null);
   const playerRef = useRef<THREE.Group | null>(null);
-  const controlsRef = useRef<THREE.Object3D | null>(null);
+  const controlsRef = useRef<OrbitControlsImpl | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -174,7 +207,7 @@ export function WorldScene() {
           groundColor="#c8f0dd"
         />
         <OrbitControls
-          ref={controlsRef as never}
+          ref={controlsRef}
           enablePan={false}
           enableZoom
           enableDamping
@@ -198,7 +231,7 @@ export function WorldScene() {
         <mesh
           rotation={[-Math.PI / 2, 0, 0]}
           receiveShadow
-          position={[15.5, -0.93, 0.4]}
+          position={[mainAreaOffset.x, -0.93, mainAreaOffset.z]}
         >
           <ringGeometry args={[5, 5.8, 32]} />
           <meshStandardMaterial color="#bee9ff" transparent opacity={0.55} />
@@ -211,6 +244,34 @@ export function WorldScene() {
               color={index % 2 === 0 ? "#f8e8c8" : "#f1d29f"}
               roughness={0.78}
             />
+          </mesh>
+        ))}
+
+        {trailRocks.map((rock, index) => (
+          <group key={`rock-${index}`} position={[rock.x, -0.95, rock.z]}>
+            <mesh castShadow position={[0, rock.height * 0.48, 0]}>
+              <dodecahedronGeometry args={[rock.radius, 0]} />
+              <meshStandardMaterial color={rock.color} roughness={0.95} />
+            </mesh>
+            <mesh
+              castShadow
+              position={[rock.radius * 0.35, 0.2, -rock.radius * 0.3]}
+            >
+              <sphereGeometry args={[rock.radius * 0.24, 10, 10]} />
+              <meshStandardMaterial color="#7f7467" roughness={0.96} />
+            </mesh>
+          </group>
+        ))}
+
+        {trailLogs.map((log, index) => (
+          <mesh
+            key={`log-${index}`}
+            castShadow
+            position={[log.x, -0.45, log.z]}
+            rotation={[0, log.rotationY, Math.PI / 2]}
+          >
+            <cylinderGeometry args={[0.23, 0.26, log.length, 12]} />
+            <meshStandardMaterial color="#7c5133" roughness={0.84} />
           </mesh>
         ))}
 
@@ -315,6 +376,7 @@ export function WorldScene() {
         <PlayerController
           playerRef={playerRef}
           interactables={interactables}
+          obstacleZones={obstacleZones}
           controlsRef={controlsRef}
           onNearbyChange={setNearby}
           onInteract={handleInteract}
