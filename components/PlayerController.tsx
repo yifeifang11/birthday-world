@@ -71,7 +71,7 @@ export function PlayerController({
     };
   }, [onClose, onInteract]);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     const player = playerRef.current;
 
     if (!player) {
@@ -79,17 +79,26 @@ export function PlayerController({
     }
 
     const speed = 4;
-    const direction = new THREE.Vector3();
+    const movement = new THREE.Vector3();
+    const cameraForward = new THREE.Vector3();
+    const cameraRight = new THREE.Vector3();
 
-    if (keys.current.w || keys.current.arrowup) direction.z -= 1;
-    if (keys.current.s || keys.current.arrowdown) direction.z += 1;
-    if (keys.current.a || keys.current.arrowleft) direction.x -= 1;
-    if (keys.current.d || keys.current.arrowright) direction.x += 1;
+    state.camera.getWorldDirection(cameraForward);
+    cameraForward.y = 0;
+    cameraForward.normalize();
 
-    if (direction.lengthSq() > 0) {
-      direction.normalize();
-      const nextX = player.position.x + direction.x * speed * delta;
-      const nextZ = player.position.z + direction.z * speed * delta;
+    cameraRight.crossVectors(cameraForward, state.camera.up).normalize();
+
+    if (keys.current.w || keys.current.arrowup) movement.add(cameraForward);
+    if (keys.current.s || keys.current.arrowdown) movement.sub(cameraForward);
+    if (keys.current.d || keys.current.arrowright) movement.add(cameraRight);
+    if (keys.current.a || keys.current.arrowleft) movement.sub(cameraRight);
+
+    if (movement.lengthSq() > 0) {
+      movement.y = 0;
+      movement.normalize();
+      const nextX = player.position.x + movement.x * speed * delta;
+      const nextZ = player.position.z + movement.z * speed * delta;
       const collisionPadding = 0.45;
 
       const isBlocked = (x: number, z: number) =>
@@ -122,7 +131,7 @@ export function PlayerController({
       }
 
       if (moved) {
-        player.rotation.y = Math.atan2(direction.x, direction.z);
+        player.rotation.y = Math.atan2(movement.x, movement.z);
       }
     }
 

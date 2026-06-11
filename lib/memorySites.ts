@@ -2,18 +2,6 @@ import type { MemorySite } from "./types";
 
 export const memorySites: MemorySite[] = [
   {
-    id: "voice-note-1",
-    title: "A voice note",
-    description: "A short message from me.",
-    type: "voice",
-    mediaUrl: "/media/voice-note-1.mp3",
-    thumbnailUrl: null,
-    noteText: null,
-    position: { x: 15.2, y: 0, z: -2.4 },
-    rotationY: 0,
-    enabled: true,
-  },
-  {
     id: "photo-1",
     title: "Berlin",
     description: "what a wonderful night",

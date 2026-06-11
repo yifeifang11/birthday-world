@@ -6,7 +6,7 @@ export default function Home() {
       className="relative min-h-screen overflow-hidden"
       style={{ fontFamily: "Comic Sans MS, Comic Sans, cursive" }}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,_#ffd700_0%,_#ff69b4_25%,_#87ceeb_50%,_#98fb98_75%,_#ffa500_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,#ffd700_0%,#ff69b4_25%,#87ceeb_50%,#98fb98_75%,#ffa500_100%)]" />
       <div className="absolute inset-0 opacity-40">
         <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-300 rounded-full transform -rotate-12" />
         <div className="absolute top-32 right-20 w-48 h-48 bg-pink-200 rounded-full transform rotate-45" />
@@ -30,6 +30,11 @@ export default function Home() {
               First,{" "}
               <span className="text-pink-600">customize your avatar</span> to
               make it uniquely yours! ✨
+            </p>
+            <p className="transform -rotate-1 bg-white/80 rounded-3xl p-4 inline-block">
+              You can also <span className="text-blue-600">drag</span> the world
+              around and <span className="text-green-600">zoom</span> in and out
+              with the mouse! 🖱️
             </p>
             <p className="transform -rotate-2 bg-white/80 rounded-3xl p-4 inline-block">
               Then <span className="text-blue-600">explore the world</span>{" "}
@@ -55,7 +60,7 @@ export default function Home() {
         </div>
 
         <Link
-          className="mt-12 rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500 px-12 py-5 text-2xl font-black text-white shadow-[8px_8px_0px_rgba(0,0,0,0.3)] transition transform hover:scale-110 hover:-rotate-1 border-4 border-white"
+          className="mt-12 rounded-3xl bg-linear-to-br from-purple-500 to-pink-500 px-12 py-5 text-2xl font-black text-white shadow-[8px_8px_0px_rgba(0,0,0,0.3)] transition transform hover:scale-110 hover:-rotate-1 border-4 border-white"
           href="/explore"
         >
           🎉 ENTER 🎉

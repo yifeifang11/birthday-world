@@ -14,7 +14,12 @@ import { PlayerController } from "./PlayerController";
 import { buildWorldInteractables } from "@/lib/interactables";
 import { defaultAvatarConfig } from "@/lib/avatarOptions";
 import { memorySites } from "@/lib/memorySites";
-import type { MemorySite, PublicMessage, WorldInteractable } from "@/lib/types";
+import type {
+  AvatarConfig,
+  MemorySite,
+  PublicMessage,
+  WorldInteractable,
+} from "@/lib/types";
 
 const pathStart = { x: -37, y: 0.05, z: 0 };
 const mainAreaOffset = { x: 24, z: 0.8 };
@@ -77,6 +82,8 @@ function offsetPosition(
 
 export function WorldScene() {
   const [messages, setMessages] = useState<PublicMessage[]>([]);
+  const [playerAvatar, setPlayerAvatar] =
+    useState<AvatarConfig>(defaultAvatarConfig);
   const [worldMemorySites, setWorldMemorySites] =
     useState<MemorySite[]>(memorySites);
   const [loading, setLoading] = useState(true);
@@ -98,10 +105,12 @@ export function WorldScene() {
       setError(null);
 
       try {
-        const [messagesResponse, memorySitesResponse] = await Promise.all([
-          fetch("/api/messages"),
-          fetch("/api/memory-sites"),
-        ]);
+        const [messagesResponse, memorySitesResponse, avatarSettingsResponse] =
+          await Promise.all([
+            fetch("/api/messages"),
+            fetch("/api/memory-sites"),
+            fetch("/api/avatar-settings"),
+          ]);
 
         if (!messagesResponse.ok) {
           throw new Error("Could not load submitted messages.");
@@ -111,13 +120,22 @@ export function WorldScene() {
           throw new Error("Could not load memory sites.");
         }
 
+        if (!avatarSettingsResponse.ok) {
+          throw new Error("Could not load avatar settings.");
+        }
+
         const nextMessages = (await messagesResponse.json()) as PublicMessage[];
         const nextMemorySites =
           (await memorySitesResponse.json()) as MemorySite[];
+        const avatarSettingsJson = (await avatarSettingsResponse.json()) as {
+          ok?: boolean;
+          settings?: AvatarConfig;
+        };
 
         if (isMounted) {
           setMessages(nextMessages);
           setWorldMemorySites(nextMemorySites);
+          setPlayerAvatar(avatarSettingsJson.settings ?? defaultAvatarConfig);
         }
       } catch (loadError) {
         if (isMounted) {
@@ -365,7 +383,7 @@ export function WorldScene() {
 
         <FloatingAvatar
           ref={playerRef}
-          avatar={defaultAvatarConfig}
+          avatar={playerAvatar}
           name="You"
           position={[pathStart.x, pathStart.y, pathStart.z]}
           scale={1.08}
