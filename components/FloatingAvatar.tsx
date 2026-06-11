@@ -76,7 +76,10 @@ export const FloatingAvatar = forwardRef<Group, FloatingAvatarProps>(
             position={[0, 1.55, 0]}
             className="pointer-events-none select-none"
           >
-            <div className="rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.1)] backdrop-blur">
+            <div
+              className="whitespace-nowrap rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.1)] backdrop-blur"
+              style={{ fontFamily: "Comic Sans MS, Comic Sans, cursive" }}
+            >
               {name}
             </div>
           </Html>

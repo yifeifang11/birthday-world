@@ -2,118 +2,64 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.95),_rgba(226,244,255,0.94)_38%,_rgba(191,233,221,0.9)_68%,_rgba(255,214,170,0.95))]" />
-      <div className="absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.8),_transparent_70%)] opacity-70" />
-      <section className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-between gap-12 px-6 py-8 md:px-10 lg:px-12">
-        <div className="flex items-center justify-between rounded-full border border-white/70 bg-white/55 px-5 py-3 shadow-[0_18px_45px_rgba(44,79,93,0.12)] backdrop-blur">
-          <div>
-            <p className="text-xs uppercase tracking-[0.34em] text-slate-600">
-              Floating Avatar Message World
+    <main
+      className="relative min-h-screen overflow-hidden"
+      style={{ fontFamily: "Comic Sans MS, Comic Sans, cursive" }}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,_#ffd700_0%,_#ff69b4_25%,_#87ceeb_50%,_#98fb98_75%,_#ffa500_100%)]" />
+      <div className="absolute inset-0 opacity-40">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-300 rounded-full transform -rotate-12" />
+        <div className="absolute top-32 right-20 w-48 h-48 bg-pink-200 rounded-full transform rotate-45" />
+        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-blue-300 rounded-full transform rotate-12" />
+        <div className="absolute bottom-32 right-10 w-36 h-36 bg-green-300 rounded-full transform -rotate-45" />
+        <div className="absolute top-1/2 right-1/4 w-28 h-28 bg-orange-300 rounded-full transform rotate-20" />
+      </div>
+      <section className="relative flex min-h-screen w-full flex-col items-center justify-center gap-8 px-6 py-8">
+        <div className="max-w-2xl text-center">
+          <h1
+            className="text-6xl md:text-7xl font-black tracking-tight text-slate-950 drop-shadow-lg transform -rotate-2"
+            style={{
+              textShadow:
+                "4px 4px 0px rgba(255,192,203,0.8), 8px 8px 0px rgba(173,216,230,0.6)",
+            }}
+          >
+            WELCOME!
+          </h1>
+          <div className="mt-12 space-y-6 text-xl md:text-2xl leading-relaxed text-slate-900 font-bold">
+            <p className="transform rotate-1 bg-white/80 rounded-3xl p-4 inline-block">
+              First,{" "}
+              <span className="text-pink-600">customize your avatar</span> to
+              make it uniquely yours! ✨
             </p>
-            <h1 className="text-sm font-semibold text-slate-900">
-              A playful 3D guestbook for birthday memories
-            </h1>
-          </div>
-          <div className="hidden gap-3 md:flex">
-            <Link
-              className="rounded-full border border-slate-300/80 px-4 py-2 text-sm text-slate-700 transition hover:bg-white"
-              href="/world"
-            >
-              Explore World
-            </Link>
-            <Link
-              className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white transition hover:bg-slate-700"
-              href="/create"
-            >
-              Leave a Message
-            </Link>
-          </div>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <div className="max-w-2xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/70 bg-white/60 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur">
-              Friends create floating avatars. The recipient explores a calm
-              little world of memories.
-            </p>
-            <h2 className="max-w-xl text-5xl font-semibold tracking-tight text-slate-950 md:text-7xl">
-              Low-poly faces.
-              <span className="block text-slate-600">Scattered messages.</span>
-              <span className="block text-slate-500">
-                Curated memory sites.
+            <p className="transform -rotate-2 bg-white/80 rounded-3xl p-4 inline-block">
+              Then <span className="text-blue-600">explore the world</span>{" "}
+              using the{" "}
+              <span className="bg-yellow-300 px-2 rounded font-mono text-lg">
+                W
               </span>
-            </h2>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-slate-700 md:text-xl">
-              This app lets visitors build simple floating avatars, leave a
-              short note, and place those messages into a bright 3D world
-              alongside voice notes, photos, videos, and written memories.
+              ,{" "}
+              <span className="bg-green-300 px-2 rounded font-mono text-lg">
+                A
+              </span>
+              ,{" "}
+              <span className="bg-orange-300 px-2 rounded font-mono text-lg">
+                S
+              </span>
+              ,{" "}
+              <span className="bg-pink-300 px-2 rounded font-mono text-lg">
+                D
+              </span>{" "}
+              keys! 🎮
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                className="rounded-full bg-slate-950 px-6 py-3 text-sm font-medium text-white shadow-[0_18px_45px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-slate-800"
-                href="/create"
-              >
-                Create an Avatar
-              </Link>
-              <Link
-                className="rounded-full border border-slate-300/90 bg-white/70 px-6 py-3 text-sm font-medium text-slate-800 transition hover:bg-white"
-                href="/world"
-              >
-                Walk the World
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid gap-4 rounded-[2rem] border border-white/70 bg-white/60 p-5 shadow-[0_30px_80px_rgba(44,79,93,0.16)] backdrop-blur">
-            <div className="rounded-[1.6rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(208,244,255,0.72))] p-5">
-              <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
-                Phase one
-              </p>
-              <h3 className="mt-2 text-2xl font-semibold text-slate-950">
-                Floating avatars first
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-slate-700">
-                The first build focuses on a simple avatar creator, a calm
-                landing page, and the core message world structure the rest of
-                the experience can grow from.
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[1.4rem] border border-slate-200/80 bg-white/75 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-                  Create
-                </p>
-                <p className="mt-2 text-sm text-slate-700">
-                  Name, avatar, message, submit.
-                </p>
-              </div>
-              <div className="rounded-[1.4rem] border border-slate-200/80 bg-white/75 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-                  World
-                </p>
-                <p className="mt-2 text-sm text-slate-700">
-                  Move, approach, read, explore.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-white/70 pt-5 text-sm text-slate-700 md:flex-row md:items-center md:justify-between">
-          <p>
-            Built for a lightweight birthday memory world with simple geometry
-            and clear interactions.
-          </p>
-          <div className="flex gap-4">
-            <Link className="transition hover:text-slate-950" href="/admin">
-              Admin
-            </Link>
-            <Link className="transition hover:text-slate-950" href="/world">
-              Preview world
-            </Link>
-          </div>
-        </div>
+        <Link
+          className="mt-12 rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500 px-12 py-5 text-2xl font-black text-white shadow-[8px_8px_0px_rgba(0,0,0,0.3)] transition transform hover:scale-110 hover:-rotate-1 border-4 border-white"
+          href="/explore"
+        >
+          🎉 ENTER 🎉
+        </Link>
       </section>
     </main>
   );

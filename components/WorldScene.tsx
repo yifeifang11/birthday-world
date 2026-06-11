@@ -15,6 +15,33 @@ import { defaultAvatarConfig } from "@/lib/avatarOptions";
 import { memorySites } from "@/lib/memorySites";
 import type { MemorySite, PublicMessage, WorldInteractable } from "@/lib/types";
 
+const pathStart = { x: -15.5, y: 0.05, z: 0 };
+const mainAreaOffset = { x: 15.5, z: 0.4 };
+
+const trailMarkers = [
+  { x: -13, z: 0.15 },
+  { x: -10, z: -0.15 },
+  { x: -7, z: 0.2 },
+  { x: -4, z: -0.1 },
+  { x: -1, z: 0.18 },
+  { x: 2, z: -0.12 },
+  { x: 5, z: 0.16 },
+  { x: 8, z: -0.08 },
+  { x: 11, z: 0.14 },
+  { x: 14, z: 0.02 },
+];
+
+function offsetPosition(
+  position: { x: number; y: number; z: number },
+  offset: { x: number; z: number },
+) {
+  return {
+    x: position.x + offset.x,
+    y: position.y,
+    z: position.z + offset.z,
+  };
+}
+
 export function WorldScene() {
   const [messages, setMessages] = useState<PublicMessage[]>([]);
   const [worldMemorySites, setWorldMemorySites] =
@@ -81,7 +108,21 @@ export function WorldScene() {
     };
   }, []);
 
-  const interactables = buildWorldInteractables(messages, worldMemorySites);
+  const worldMessages = messages.map((message) => ({
+    ...message,
+    position: offsetPosition(message.position, mainAreaOffset),
+  }));
+  const interactables = buildWorldInteractables(
+    worldMessages,
+    worldMemorySites,
+  );
+  const pathVideoSites = worldMemorySites.filter(
+    (site) => site.type === "video" && site.enabled,
+  );
+  const mainMemorySites = worldMemorySites.filter(
+    (site) => site.type !== "video" && site.enabled,
+  );
+  const tagsHidden = Boolean(selectedMessage || selectedMemorySite);
 
   function handleInteract(value: WorldInteractable) {
     if (value.kind === "message") {
@@ -142,7 +183,7 @@ export function WorldScene() {
           maxDistance={16}
           minPolarAngle={Math.PI / 4.8}
           maxPolarAngle={Math.PI / 2.08}
-          target={[0, 1.1, 0]}
+          target={[pathStart.x, pathStart.y + 1.1, pathStart.z]}
         />
 
         <mesh
@@ -157,21 +198,17 @@ export function WorldScene() {
         <mesh
           rotation={[-Math.PI / 2, 0, 0]}
           receiveShadow
-          position={[0, -0.93, 0]}
+          position={[15.5, -0.93, 0.4]}
         >
           <ringGeometry args={[5, 5.8, 32]} />
           <meshStandardMaterial color="#bee9ff" transparent opacity={0.55} />
         </mesh>
 
-        {[...Array(9)].map((_, index) => (
-          <mesh
-            key={index}
-            castShadow
-            position={[-18 + index * 4.5, -0.2, -12 + (index % 2) * 2.8]}
-          >
-            <boxGeometry args={[0.8, 0.8 + (index % 3) * 0.4, 0.8]} />
+        {trailMarkers.map((marker, index) => (
+          <mesh key={index} castShadow position={[marker.x, -0.18, marker.z]}>
+            <boxGeometry args={[0.95, 0.22 + (index % 2) * 0.04, 0.95]} />
             <meshStandardMaterial
-              color={index % 2 === 0 ? "#f9a8d4" : "#fcd34d"}
+              color={index % 2 === 0 ? "#f8e8c8" : "#f1d29f"}
               roughness={0.78}
             />
           </mesh>
@@ -180,7 +217,7 @@ export function WorldScene() {
         {[...Array(6)].map((_, index) => (
           <group
             key={index}
-            position={[-16 + index * 6.2, -0.95, 10 - (index % 2) * 2.5]}
+            position={[9.5 + index * 2.3, -0.95, 7.8 - (index % 2) * 3]}
           >
             <mesh castShadow position={[0, 0.8, 0]}>
               <cylinderGeometry args={[0.18, 0.18, 1.6, 8]} />
@@ -196,11 +233,12 @@ export function WorldScene() {
           </group>
         ))}
 
-        {messages.map((message, index) => (
+        {worldMessages.map((message, index) => (
           <FloatingAvatar
             key={message.id}
             avatar={message.avatar}
             name={message.displayName}
+            showName={!tagsHidden}
             position={[
               message.position.x,
               message.position.y,
@@ -221,37 +259,54 @@ export function WorldScene() {
           />
         ))}
 
-        {worldMemorySites
-          .filter((site) => site.enabled)
-          .map((site) => (
-            <MemorySiteObject
-              key={site.id}
-              site={site}
-              onClick={() =>
-                handleInteract({
-                  id: site.id,
-                  kind: "memorySite",
-                  position: site.position,
-                  interactionRadius: 2.4,
-                  prompt:
-                    site.type === "voice"
-                      ? "Press E to play voice note"
-                      : site.type === "photo"
-                        ? "Press E to view photo"
-                        : site.type === "video"
-                          ? "Press E to watch video"
-                          : "Press E to read note",
-                  payload: site,
-                })
-              }
-            />
-          ))}
+        {pathVideoSites.map((site) => (
+          <MemorySiteObject
+            key={site.id}
+            site={site}
+            showLabel={!tagsHidden}
+            onClick={() =>
+              handleInteract({
+                id: site.id,
+                kind: "memorySite",
+                position: site.position,
+                interactionRadius: 2.4,
+                prompt: "Press E to watch video",
+                payload: site,
+              })
+            }
+          />
+        ))}
+
+        {mainMemorySites.map((site) => (
+          <MemorySiteObject
+            key={site.id}
+            site={site}
+            showLabel={!tagsHidden}
+            onClick={() =>
+              handleInteract({
+                id: site.id,
+                kind: "memorySite",
+                position: site.position,
+                interactionRadius: 2.4,
+                prompt:
+                  site.type === "voice"
+                    ? "Press E to play voice note"
+                    : site.type === "photo"
+                      ? "Press E to view photo"
+                      : site.type === "video"
+                        ? "Press E to watch video"
+                        : "Press E to read note",
+                payload: site,
+              })
+            }
+          />
+        ))}
 
         <FloatingAvatar
           ref={playerRef}
           avatar={defaultAvatarConfig}
           name="You"
-          position={[0, 0.05, 0]}
+          position={[pathStart.x, pathStart.y, pathStart.z]}
           scale={1.08}
           showName={false}
           highlight
@@ -266,12 +321,6 @@ export function WorldScene() {
           onClose={closePanels}
         />
       </Canvas>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-16 z-20 flex justify-center px-4">
-        <div className="pointer-events-auto rounded-2xl border border-white/70 bg-white/80 px-4 py-3 text-sm text-slate-700 shadow-[0_18px_50px_rgba(15,23,42,0.12)] backdrop-blur">
-          {nearby?.prompt ?? "Move around to find messages and memory sites."}
-        </div>
-      </div>
 
       <InteractionPrompt prompt={nearby?.prompt ?? null} />
       <MessagePopup message={selectedMessage} onClose={closePanels} />

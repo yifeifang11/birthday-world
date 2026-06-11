@@ -6,24 +6,34 @@ import type { MemorySite } from "@/lib/types";
 type MemorySiteObjectProps = {
   site: MemorySite;
   onClick?: () => void;
+  showLabel?: boolean;
 };
 
-export function MemorySiteObject({ site, onClick }: MemorySiteObjectProps) {
+export function MemorySiteObject({
+  site,
+  onClick,
+  showLabel = true,
+}: MemorySiteObjectProps) {
   return (
     <group
       position={[site.position.x, site.position.y, site.position.z]}
       rotation={[0, site.rotationY ?? 0, 0]}
       onClick={onClick}
     >
-      <Html
-        center
-        position={[0, 1.45, 0]}
-        className="pointer-events-none select-none"
-      >
-        <div className="rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.1)] backdrop-blur">
-          {site.title}
-        </div>
-      </Html>
+      {showLabel ? (
+        <Html
+          center
+          position={[0, 1.45, 0]}
+          className="pointer-events-none select-none"
+        >
+          <div
+            className="whitespace-nowrap rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.1)] backdrop-blur"
+            style={{ fontFamily: "Comic Sans MS, Comic Sans, cursive" }}
+          >
+            {site.title}
+          </div>
+        </Html>
+      ) : null}
 
       {site.type === "voice" ? (
         <group>
