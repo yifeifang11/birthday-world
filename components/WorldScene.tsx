@@ -406,12 +406,7 @@ export function WorldScene() {
       <MessagePopup message={selectedMessage} onClose={closePanels} />
       <MemorySiteModal site={selectedMemorySite} onClose={closePanels} />
 
-      {!loading && !error && messages.length === 0 ? (
-        <div className="absolute bottom-6 left-6 max-w-md rounded-3xl border border-white/70 bg-white/80 p-4 text-sm text-slate-700 shadow-[0_18px_50px_rgba(15,23,42,0.12)] backdrop-blur">
-          No approved messages yet. Submit one from the create page, then
-          approve it in admin to see it in the world.
-        </div>
-      ) : null}
+      {!loading && !error && messages.length === 0 ? <div></div> : null}
     </div>
   );
 }

@@ -7,7 +7,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<Response> {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    return new Promise((resolve) => {
+    return new Promise<Response>((resolve) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           resource_type: type === "video" ? "video" : "image",
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
       uploadStream.end(buffer);
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
